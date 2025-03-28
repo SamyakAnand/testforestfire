@@ -1,0 +1,13 @@
+prefix=D:/Algerian forest fire project/myenv/Library
+exec_prefix=D:/Algerian forest fire project/myenv/Library
+libdir=D:/Algerian forest fire project/myenv/Library/lib
+sharedlibdir=D:/Algerian forest fire project/myenv/Library/lib
+includedir=D:/Algerian forest fire project/myenv/Library/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}
