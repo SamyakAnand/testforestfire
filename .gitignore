@@ -1,0 +1,37 @@
+# Python virtual environments (including the legacy Windows environment)
+.venv/
+venv/
+env/
+myenv/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Packaging and build output
+build/
+dist/
+*.egg-info/
+
+# Test and coverage output
+.coverage
+.coverage.*
+htmlcov/
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Logs and local editor/OS files
+*.log
+.vscode/
+.idea/
+.DS_Store
