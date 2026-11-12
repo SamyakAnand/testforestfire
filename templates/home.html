@@ -1,31 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FWI Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Forest Fire Weather Index Prediction</title>
 </head>
 <body>
-    <div class="login">
-        <h1>FWI Prediction</h1>
-        <form action="{{ url_for('predict_datapoint')}}" method="post">
-            <input type="text" name="Temperature" placeholder="Temperature" required="required" /><br>
-            <input type="text" name="RH" placeholder="RH" required="required" /><br>
-            <input type="text" name="Ws" placeholder="Ws" required="required" /><br>
-            <input type="text" name="Rain" placeholder="Rain" required="required" /><br>
-            <input type="text" name="FFMC" placeholder="FFMC" required="required" /><br>
-            <input type="text" name="DMC" placeholder="DMC" required="required" /><br>
-            <input type="text" name="ISI" placeholder="ISI" required="required" /><br>
-            <input type="text" name="Classes" placeholder="Classes" required="required" /><br>
-            <input type="text" name="Region" placeholder="Region" required="required" /><br>
+    <main>
+        <h1>Forest Fire Weather Index (FWI) Prediction</h1>
 
-            <button type="submit">Predict</button>
+        <form action="{{ url_for('predict_datapoint') }}" method="post">
+            <div>
+                <label for="temperature">Temperature</label>
+                <input id="temperature" type="number" name="Temperature" step="any" required>
+            </div>
+            <div>
+                <label for="relative-humidity">Relative humidity (RH)</label>
+                <input id="relative-humidity" type="number" name="RH" step="any" required>
+            </div>
+            <div>
+                <label for="wind-speed">Wind speed (Ws)</label>
+                <input id="wind-speed" type="number" name="Ws" step="any" required>
+            </div>
+            <div>
+                <label for="rain">Rain</label>
+                <input id="rain" type="number" name="Rain" step="any" required>
+            </div>
+            <div>
+                <label for="ffmc">Fine Fuel Moisture Code (FFMC)</label>
+                <input id="ffmc" type="number" name="FFMC" step="any" required>
+            </div>
+            <div>
+                <label for="dmc">Duff Moisture Code (DMC)</label>
+                <input id="dmc" type="number" name="DMC" step="any" required>
+            </div>
+            <div>
+                <label for="isi">Initial Spread Index (ISI)</label>
+                <input id="isi" type="number" name="ISI" step="any" required>
+            </div>
+            <div>
+                <label for="classes">Fire-weather class (Classes)</label>
+                <input id="classes" type="number" name="Classes" step="any" required>
+            </div>
+            <div>
+                <label for="region">Region</label>
+                <input id="region" type="number" name="Region" step="any" required>
+            </div>
+
+            <button type="submit">Predict FWI</button>
         </form>
 
-        <h2>THE FWI prediction is {{ results }}</h2>
-
         {% if error %}
-        <p style="color:red;">{{ error }}</p>
+        <p id="prediction-error" role="alert" aria-live="polite">{{ error }}</p>
         {% endif %}
-    </div>
+
+        {% if results is defined %}
+        <p id="prediction-result" role="status">Predicted FWI: {{ results }}</p>
+        {% endif %}
+    </main>
 </body>
 </html>
