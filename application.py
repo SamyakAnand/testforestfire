@@ -1,52 +1,73 @@
+import pickle
+
 import numpy as np
 import pandas as pd
-import pickle
 from flask import Flask, render_template, request
 
 # Load model and scaler
-ridge_model = pickle.load(open('models/ridge.pkl', 'rb'))
-standard_scaler = pickle.load(open('models/scaler.pkl', 'rb'))
+ridge_model = pickle.load(open("models/ridge.pkl", "rb"))
+standard_scaler = pickle.load(open("models/scaler.pkl", "rb"))
+
+FEATURE_COLUMNS = (
+    "Temperature",
+    "RH",
+    "Ws",
+    "Rain",
+    "FFMC",
+    "DMC",
+    "ISI",
+    "Classes",
+    "Region",
+)
+
+
+def build_prediction_frame(form):
+    """Validate the submitted form and return features in training-column order."""
+    values = {}
+
+    for feature in FEATURE_COLUMNS:
+        raw_value = form.get(feature)
+        if raw_value is None or not str(raw_value).strip():
+            raise ValueError(f"{feature} is required.")
+
+        try:
+            value = float(raw_value)
+        except (TypeError, ValueError):
+            raise ValueError(f"{feature} must be a valid number.") from None
+
+        if not np.isfinite(value):
+            raise ValueError(f"{feature} must be a finite number.")
+
+        values[feature] = value
+
+    return pd.DataFrame([values], columns=FEATURE_COLUMNS)
+
 
 # Initialize Flask app
 application = Flask(__name__)
 app = application
 
-@app.route('/')
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/predictdata', methods=['GET', 'POST'])
+
+@app.route("/predictdata", methods=["GET", "POST"])
 def predict_datapoint():
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
-            # Retrieve input values
-            Temperature = float(request.form.get('Temperature', 0))
-            RH = float(request.form.get('RH', 0))
-            Ws = float(request.form.get('Ws', 0))
-            Rain = float(request.form.get('Rain', 0))
-            FFMC = float(request.form.get('FFMC', 0))
-            DMC = float(request.form.get('DMC', 0))
-            ISI = float(request.form.get('ISI', 0))
-            Classes = float(request.form.get('Classes', 0))
-            Region = float(request.form.get('Region', 0))
-        except ValueError:
-            return render_template('home.html', error="Please enter valid numeric values.")
+            input_data = build_prediction_frame(request.form)
+        except ValueError as exc:
+            return render_template("home.html", error=str(exc)), 400
 
-        # Create DataFrame with matching feature names (dropping extra columns)
-        model_columns = ['Temperature', 'RH', 'Ws', 'Rain', 'FFMC', 'DMC', 'ISI', 'Classes', 'Region']
-        input_data = pd.DataFrame([[Temperature, RH, Ws, Rain, FFMC, DMC, ISI, Classes, Region]], columns=model_columns)
-
-        # Scale and predict
         new_data_scaled = standard_scaler.transform(input_data)
         result = ridge_model.predict(new_data_scaled)
 
-        # Debugging print to check the result
-        print("Prediction Result:", result[0])
+        return render_template("home.html", results=round(float(result[0]), 2))
 
-        # Pass result to the template
-        return render_template('home.html', results=round(result[0], 2))
+    return render_template("home.html")
 
-    return render_template('home.html')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")
