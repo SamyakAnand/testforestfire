@@ -5,8 +5,10 @@ import pandas as pd
 from flask import Flask, render_template, request
 
 # Load model and scaler
-ridge_model = pickle.load(open("models/ridge.pkl", "rb"))
-standard_scaler = pickle.load(open("models/scaler.pkl", "rb"))
+with open("models/ridge.pkl", "rb") as model_file:
+    ridge_model = pickle.load(model_file)
+with open("models/scaler.pkl", "rb") as scaler_file:
+    standard_scaler = pickle.load(scaler_file)
 
 FEATURE_COLUMNS = (
     "Temperature",
